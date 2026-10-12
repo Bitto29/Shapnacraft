@@ -417,7 +417,17 @@ $('bj').addEventListener('pointerleave',  () => jumpHeld = false);
 $('bv').addEventListener('pointerdown', e => { e.preventDefault(); toggleFind(); });
 
 $('qv').addEventListener('click', () => { qi = (qi + 1) % QL.length; applyQ(); });
-$('go').addEventListener('click', () => {
+$('go').addEventListener('click', async () => {
+  // On supported mobile browsers, enter fullscreen and lock the game to landscape.
+  if (touchDev) {
+    try {
+      const root = document.documentElement;
+      if (!document.fullscreenElement && root.requestFullscreen) await root.requestFullscreen();
+    } catch (e) { /* Fullscreen may be unavailable or denied by the browser. */ }
+    try {
+      if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
+    } catch (e) { /* Some mobile browsers only allow orientation lock in installed apps. */ }
+  }
   $('ov').style.display = 'none'; playing = true; last = performance.now();
   if (!touchDev) $('c').requestPointerLock();
 });
